@@ -1,20 +1,25 @@
 import mysql.connector
 import speedtest
 import time  
- 
+import subprocess
+
+connected_ssid = subprocess.check_output("powershell.exe (get-netconnectionProfile).Name", shell=True).strip()
+connected_ssid2 = connected_ssid.decode("utf8")
+# print(connected_ssid2)
+
 mydb = mysql.connector.connect(
   host = "localhost",
   user = "root",
   password = "",
   database = "sergiopruebas"
 ) 
-  
-
-
 
 i = 1
 total = 20
 timeout = 5
+
+connected_ssid = subprocess.check_output("powershell.exe (get-netconnectionProfile).Name", shell=True).strip()
+print(connected_ssid)
 
 servers = [18494]
 # If you want to test against a specific server
@@ -43,8 +48,8 @@ for i in range(total):
 	print("    * Upload Speed: ", upspeed_mbps )
 	mycursor = mydb.cursor()
 
-	sql = "INSERT INTO speedtest (download, upload) VALUES (%s, %s)"
-	val = (dsspeed_mbps, upspeed_mbps)
+	sql = "INSERT INTO speedtest (download, upload, wifissid) VALUES (%s, %s, %s)"
+	val = (dsspeed_mbps, upspeed_mbps, connected_ssid2)
 	
 	mycursor.execute(sql, val)
 	mydb.commit()
